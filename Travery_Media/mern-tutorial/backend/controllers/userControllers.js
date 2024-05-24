@@ -4,8 +4,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 
-// @desc Get User
-// @route GET /api/user
+
+/**
+ * 
+ * i dont think i had an endpoint to get just one users
+ * need to add function to get 1 user
+ * 
+ */
+
+// @desc Post User
+// @route Post /api/user
 // @access Public
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -66,7 +74,8 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error('Something went wrong sorry');
   }
 
-//   registerUser.json({ message: 'user registered' });
+  // registerUser.json({ message: 'user registered' });
+  user.json({ message: 'Welcome Back' });
 
 });
 
