@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaUser } from 'react-icons/fa';
 import { register, reset } from '../features/auth/authSlice';
-import Spinner from '../components/Spinner'
+import Spinner from '../components/Spinner';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -22,19 +22,15 @@ function Register() {
     (state) => state.auth
   );
 
-  useEffect(() =>{
+  useEffect(() => {
     if (isError) {
-      toast.error(message)
-      
+      toast.error(message);
     }
 
     if (isSuccess || user) {
-      navigate('/'),      
-      dispatch(reset())
-      
+      navigate('/'), dispatch(reset());
     }
-
-  },[user, isError, isSuccess, message, navigate, dispatch])
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -45,13 +41,19 @@ function Register() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    password !== password2 
-      ? toast.error('passwords dont match')
+    if (!name || !email || !password) {
+      toast.error('Please fill in all the fields');
+
+      return;
+    }
+
+    password !== password2
+      ? toast.error('Passwords dont match')
       : dispatch(register({ name, email, password }));
   };
 
   if (isLoading) {
-    return <Spinner/>
+    return <Spinner />;
   }
 
   return (

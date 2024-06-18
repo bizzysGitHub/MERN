@@ -19,23 +19,24 @@ function Login() {
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
-  useEffect(() =>{
-    if (isError) {
-      toast.error(message)
-      
-    }
-  
-    if (isSuccess || user) {
-      navigate('/'),      
-      dispatch(reset())
-      
-    }
-
-  },[user, isError, isSuccess, message, navigate, dispatch])
-
-
+  const { goals } = useSelector( (state)=> state.goals )
 
   const { email, password } = formData;
+
+
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      navigate('/');
+      dispatch(reset());
+    }
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
+
+
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -44,19 +45,23 @@ function Login() {
   };
   const attemptLogin = (e) => {
     e.preventDefault;
-    dispatch(login({email, password}))
-    navigate('/')
-    
+    if ( !email || !password) {
+      toast.error('Please fill in all the fields');
+      return;
+    }
+    dispatch(login({ email, password }));
+    // dispatch(getAllGoals({ email, password }))
+
   };
 
   if (isLoading) {
-    return <Spinner/>
+    return <Spinner />;
   }
   return (
     <>
       <section className="heading">
         <h1>
-          <FaSignInAlt className='inline' /> Login
+          <FaSignInAlt className="inline" /> Login
         </h1>
         <p> Login and Start Setting Goals</p>
       </section>
@@ -86,7 +91,11 @@ function Login() {
           </div>
 
           <div className="form-group">
-            <button type="submit" className="btn btn-block" onClick={attemptLogin}>
+            <button
+              type="submit"
+              className="btn btn-block"
+              onClick={attemptLogin}
+            >
               Submit
             </button>
           </div>

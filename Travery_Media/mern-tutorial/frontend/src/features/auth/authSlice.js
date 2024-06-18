@@ -9,7 +9,6 @@ const user = JSON.parse(localStorage.getItem('user'));
 const initialState = { 
     user: user ? user : null,
     // i think i can remove these later with react router 
-    //
     isError: false,
     isSuccess:false,
     isLoading:false,

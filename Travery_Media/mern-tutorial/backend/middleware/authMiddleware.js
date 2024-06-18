@@ -19,6 +19,7 @@ const saveMeFromNonAuthenticity = asyncHandler(async (req, res, next) => {
             //Get user from token. we use req.user to get the user from the token so that
             //We can access this user via any route thats protected 
             //.select('-password') function will remove the password and not include it in the req.user
+            
             req.user = await User.findById(decoded.id).select('-password');
             next()
         } catch (error) {

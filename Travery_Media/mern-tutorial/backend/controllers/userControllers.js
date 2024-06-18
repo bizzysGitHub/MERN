@@ -3,15 +3,6 @@ const User = require('../models/userModels');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
-
-/**
- * 
- * i dont think i had an endpoint to get just one users
- * need to add function to get 1 user
- * 
- */
-
 // @desc Post User
 // @route Post /api/user
 // @access Public
@@ -20,7 +11,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    res.status(400);
+    res.status(401);
     throw new Error(
       'Missing Field check request body for name email and password'
     );
@@ -45,7 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: newUser.id,
       name: newUser.name,
       email: newUser.email,
-      token:generateToken(newUser._id)
+      token: generateToken(newUser._id),
     });
   } else {
     res.status(400);
@@ -62,12 +53,23 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  if (user && ( bcrypt.compareSync(password, user.password))) {
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error('Please enter in an email and password to continue');
+  }
+
+  if (user && !bcrypt.compareSync(password, user.password)) {
+    res.status(400);
+    throw new Error('Wrong password, try again!!');
+  }
+
+  if (user && bcrypt.compareSync(password, user.password)) {
     res.status(201).json({
       _id: user.id,
       name: user.name,
       email: user.email,
-      token:generateToken(user.id)
+      token: generateToken(user.id),
     });
   } else {
     res.status(400);
@@ -75,29 +77,21 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   // registerUser.json({ message: 'user registered' });
-  user.json({ message: 'Welcome Back' });
-
+  // user.json({ message: 'Welcome Back' });
 });
 
 // @desc Post User
 // @route Post /api/user/me
 // @access Private
 
-const getMe = asyncHandler( async (req, res) => {
-//   res.json({ message: 'get me' });
-const {_id, name, email } = await User.findById(req.user.id);
-res.status(200).json({
-    id: _id,
-    name,
-    email
-})
+const getMe = asyncHandler(async (req, res) => {
+  res.status(200).json(req.user);
 });
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
-  
 };
 
 module.exports = { registerUser, loginUser, getMe };
