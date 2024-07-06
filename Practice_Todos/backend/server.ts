@@ -1,42 +1,29 @@
 // import 'dotenv/config'
-import express,{Express, Request, Response} from "express";
+import express, { Express } from "express";
 import dotenv from "dotenv";
-import mongoose, { ConnectOptions } from "mongoose";
-import Todo from "./models/ToDos/todo";
+import errorHandler from './middlewares/errorHandler'
+import { connect } from "./config/config";
+import todoRoutes from "./routes/todoRoutes";
+
+const port = process.env.PORT;
 
 dotenv.config();
 
-const app : Express = express();
-const port = process.env.PORT;
-const AdminName=process.env.MONGO_INITDB_ROOT_USERNAME;
-const Password= process.env.MONGO_INITDB_ROOT_PASSWORD;
-const dataBase= process.env.MONGO_INITIAL_DATABASE;
-const uri= `mongodb://${AdminName}:${Password}@mongo:27017/${dataBase}`
 
-const getStarted = async ( ) => {
-    //mongodb://bizzy:thankgod58@mongo:27017/'
-    mongoose.connection.on('open', () => console.log('the port is open'));
-  
-    await  mongoose.connect(uri).then(() => console.log('we are connected to MongoDB'));
-  
-    const DoSomething = new Todo({
-           title: 'do something',
-           description: 'do something now',
-           completed: false,
-           createdAt: Date.now()
-       });
-       
-   await DoSomething.save();
+connect();
+const app: Express = express();
 
-};
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-getStarted().catch(error => console.log(error));
+app.use('/todos', todoRoutes);
 
+app.use(errorHandler);
 
-app.get('/', (req: Request, res: Response) =>{res.send('Hello tunechi???')});
+app.get('/', (req: any, res: any) => { res.send('Hello tunechi???') });
+
+app.listen(port, () => console.log(`Example app listening on port 1116`));
 
 
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-  })
+
